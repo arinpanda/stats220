@@ -1,0 +1,75 @@
+---
+title: "Bus Commute Reliability Report"
+output: html_fragment
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, message=FALSE, warning=FALSE, error=FALSE)
+
+# Load necessary library
+library(tidyverse)
+
+# Import and clean data
+csv_url <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vQnq8A60TB2xCDycdfxkTKL3JHKT9IARTOwnv97DtN3_tIYzqKZd3hvrZzaP2ajNVP7OnkBVO7kGE5e/pub?gid=1834374921&single=true&output=csv"
+
+logged_data <- read_csv(csv_url)
+
+latest_data <- logged_data %>%
+  rename(bus_capacity = 2,
+         delay_mins = 3,
+         bus_route = 4)
+
+# Calculate summary values for dynamic comments
+average_delay <- mean(latest_data$delay_mins, na.rm = TRUE)
+max_delay <- max(latest_data$delay_mins, na.rm = TRUE)
+total_logs <- nrow(latest_data)
+```
+
+```{css}
+/* Optional styling for your dynamic comments */
+.dynamic-comment {
+  background-color: #f0f8ff;
+  padding: 15px;
+  border-left: 5px solid #4682b4;
+  font-style: italic;
+}
+```
+
+## Analysis of Daily Bus Commute Reliability
+
+This report provides a dynamic overview of public transport performance based on observational logging. Over the past two weeks, I have recorded data on bus arrival delays and passenger capacity across various routes to identify patterns in service reliability.
+
+::: dynamic-comment
+**Key Insights:**  
+To date, a total of **`r total_logs`** observations have been recorded. On average, buses arrived **`r round(average_delay, 1)`** minutes after their scheduled time. The most significant delay observed during this period was **`r max_delay`** minutes.
+:::
+
+### Observed Bus Capacity
+The chart below visualises how crowded the buses were during the observed trips. This categorical data helps in understanding peak-time pressure on specific routes.
+
+```{r fig.width=8, fig.height=4}
+# Chart 1: Distribution of observed Bus Capacity
+latest_data %>%
+  ggplot() +
+  geom_bar(aes(x = bus_capacity), fill = "steelblue") +
+  theme_minimal() +
+  labs(title = "Frequency of Bus Capacity Levels",
+       subtitle = "Categorical distribution of passenger volume",
+       x = "Capacity Description",
+       y = "Number of Observations")
+```
+
+### Route Distribution
+This visualisation shows the frequency of logs per bus route, providing context on which services were monitored most frequently during the data collection phase.
+
+```{r fig.width=8, fig.height=4}
+# Chart 2: Frequency of specific Bus Routes logged
+latest_data %>%
+  ggplot() +
+  geom_bar(aes(x = bus_route), fill = "darkorange") +
+  theme_minimal() +
+  labs(title = "Summary of Bus Routes Logged",
+       subtitle = "Distribution of transport routes tracked",
+       x = "Bus Route Number",
+       y = "Frequency")
+```
