@@ -1,0 +1,67 @@
+---
+title: "The Waiting Game: Auckland Bus Tracking"
+author: "Arin Kolagotla"
+output: html_document
+---
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, message=FALSE, warning=FALSE, error=FALSE)
+```
+
+```{js}
+$(function() {
+  $(".level2").css('visibility', 'hidden');
+  $(".level2").first().css('visibility', 'visible');
+  $(".container-fluid").height($(".container-fluid").height() + 300);
+  $(window).on('scroll', function() {
+    $('h2').each(function() {
+      var h2Top = $(this).offset().top - $(window).scrollTop();
+      var windowHeight = $(window).height();
+      if (h2Top >= 0 && h2Top <= windowHeight / 2) {
+        $(this).parent('div').css('visibility', 'visible');
+      } else if (h2Top > windowHeight / 2) {
+        $(this).parent('div').css('visibility', 'hidden');
+      }
+    });
+  });
+})
+```
+
+```{css, echo=FALSE}
+.figcaption {display: none}
+
+/* Custom color palette matching the ggplot theme from Part C */
+body {
+  background-color: #fcfcfc;
+  font-family: Arial, sans-serif;
+  color: #333333;
+}
+h1, h2 {
+  color: #1b9e77; /* Matches the plot titles */
+  font-weight: bold;
+}
+p {
+  font-size: 14pt;
+  color: #555555;
+}
+```
+
+## Tracking Delays Over Time
+
+To understand the reliability of Auckland's bus network, I logged several observations of bus arrivals and their capacities. Tracking the buses throughout the day reveals exactly when delays hit their peak. In this plot, values above the zero line mean the bus was late, while values below indicate the bus arrived early.
+
+![A scatter plot showing bus arrival delays in minutes over the time of observation. A dashed line at zero separates late buses from early buses. The points are colored by bus route.](plot1.png)
+
+## Which route is the most unreliable?
+
+By grouping the observations by bus number and calculating the average delay time per route, we can easily identify the most problematic services. 
+
+![A horizontal bar chart ranking the different bus routes by their average delay in minutes. The routes are ordered from the highest average delay down to the lowest.](plot2.png)
+
+## How full do the buses get?
+
+A bus arriving on time isn't helpful if it is too full to board! Observing the capacity allows us to see how crowded the buses get across the different routes. 
+
+![A boxplot showing the distribution of current bus capacities. The chart compares the median capacity and the spread of crowdedness across the different bus routes.](plot3.png)
